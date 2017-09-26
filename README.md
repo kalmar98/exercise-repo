@@ -1,8 +1,1 @@
-
-sega sam ot BASHA
-
-OT GITHUBA SAM WE!
-
-SEGA SAM OT BRANCHA WE 
-
-SEGA SAM OT MASTERA WE
+Big Dogz
