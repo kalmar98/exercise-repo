@@ -1,1 +1,333 @@
-voda
+///////////////////////////////////////1///////////////////////////////////////
+static void Main()
+        {
+            int priceOfEachBullet = int.Parse(Console.ReadLine());
+            int sizeOfTheGunBarrel = int.Parse(Console.ReadLine());
+            int[] bulletsInput = Console.ReadLine()
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .ToArray();
+            int[] locksInput = Console.ReadLine()
+               .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+               .Select(int.Parse)
+               .ToArray();
+            int valueOfIntelligence = int.Parse(Console.ReadLine());
+
+            Stack<int> bullets = new Stack<int>(bulletsInput);
+            Queue<int> locks = new Queue<int>(locksInput);
+
+            int counterBullet = 0;
+
+            while (locks.Count > 0 && bullets.Count > 0)
+            {
+                int shot = bullets.Pop();
+                counterBullet++;
+                
+                
+                if (shot <= locks.Peek())
+                {
+                    Console.WriteLine("Bang!");
+                    locks.Dequeue();
+                }
+                else
+                {
+                    Console.WriteLine("Ping!");
+                }
+
+                if (counterBullet == sizeOfTheGunBarrel && bullets.Count>0)
+                {
+                    Console.WriteLine("Reloading!");
+                    counterBullet = 0;
+                }
+
+            }
+
+            if (bullets.Count > 0)
+            {
+                Console.WriteLine($"{bullets.Count} bullets left. Earned ${valueOfIntelligence-(priceOfEachBullet*(bulletsInput.Length-bullets.Count))}");
+            }
+            else if (locks.Count > 0)
+            {
+                Console.WriteLine($"Couldn't get through. Locks left: {locks.Count}");
+            }
+            else
+            {
+                Console.WriteLine($"{bullets.Count} bullets left. Earned ${valueOfIntelligence - (priceOfEachBullet * (bulletsInput.Length - bullets.Count))}");
+
+            }
+
+        }
+///////////////////////////////////////2///////////////////////////////////////
+static void Main()
+        {
+            int rows = int.Parse(Console.ReadLine());
+
+            char[][] matrix = new char[rows][];
+
+            for (int r = 0; r < rows; r++)
+            {
+                matrix[r] = Console.ReadLine().ToCharArray();
+            }
+            int[] playerRC = new int[2];
+            int[] bossRC = new int[2];
+            bool hasBossRC = false;
+            bool hasPlayerRC = false;
+            char[] movement = Console.ReadLine().ToCharArray();
+            int moveCount = 0;
+            bool isEnded = false;
+
+            while (!isEnded)
+            {
+                //Enemies 
+                for (int r = 0; r < matrix.Length; r++)
+                {
+                    bool isMoved = false;
+                    for (int c = 0; c < matrix[0].Length; c++)
+                    {
+
+                        if (matrix[r][c] == '.') { }
+                        else if (matrix[r][c] == 'd' && !isMoved)
+                        {
+                            if (c == 0)
+                            {
+                                matrix[r][c] = 'b';
+                            }
+
+                            else
+                            {
+                                if (matrix[r][c - 1] == '.')
+                                {
+                                    matrix[r][c - 1] = 'd';
+                                    matrix[r][c] = '.';
+                                    isMoved = true;
+                                }
+                                else
+                                {
+                                    isEnded = true;
+                                    Console.WriteLine($"Sam died at {r}, {c}");
+                                    matrix[r][c] = 'X';
+                                    break;
+                                }
+                            }
+
+
+                        }
+                        else if (matrix[r][c] == 'b' && !isMoved)
+                        {
+                            if (c == matrix[0].Length - 1)
+                            {
+                                matrix[r][c] = 'd';
+                            }
+                            else
+                            {
+                                if (matrix[r][c + 1] == '.')
+                                {
+                                    matrix[r][c + 1] = 'b';
+                                    matrix[r][c] = '.';
+                                    isMoved = true;
+                                }
+                                else
+                                {
+                                    isEnded = true;
+                                    Console.WriteLine($"Sam died at {r}, {c}");
+                                    matrix[r][c] = 'X';
+                                    break;
+                                }
+                            }
+
+                        }
+                        else if (!hasPlayerRC && matrix[r][c] == 'S')
+                        {
+                            playerRC[0] = r;
+                            playerRC[1] = c;
+                            hasPlayerRC = true;
+                        }
+                        else if (!hasBossRC && matrix[r][c] == 'N')
+                        {
+                            bossRC[0] = r;
+                            bossRC[1] = c;
+                            hasBossRC = true;
+                        }
+                    }
+                }
+                //Player
+                if (isEnded)
+                {
+                    break;
+                }
+                for (int c = 0; c < matrix[0].Length; c++)
+                {
+                    if (matrix[playerRC[0]][c] == 'b')
+                    {
+                        if (playerRC[1] > c)
+                        {
+                            isEnded = true;
+                            Console.WriteLine($"Sam died at {playerRC[0]}, {playerRC[1]}");
+                            matrix[playerRC[0]][playerRC[1]] = 'X';
+                        }
+                        break;
+                    }
+                    else if (matrix[playerRC[0]][c] == 'd')
+                    {
+                        if (playerRC[1] < c)
+                        {
+                            isEnded = true;
+
+                            Console.WriteLine($"Sam died at {playerRC[0]}, {playerRC[1]}");
+                            matrix[playerRC[0]][playerRC[1]] = 'X';
+                        }
+                        break;
+                    }
+                }
+
+                if (isEnded)
+                {
+                    break;
+                }
+
+
+                if (bossRC[0] == playerRC[0])
+                {
+
+                    isEnded = true;
+                    matrix[bossRC[0]][bossRC[1]] = 'X';
+                    Console.WriteLine("Nikoladze killed!");
+                }
+                else
+                {
+                    if (movement[moveCount] == 'W') { }
+                    else if (movement[moveCount] == 'U')
+                    {
+                        matrix[playerRC[0]][playerRC[1]] = '.';
+                        playerRC[0] -= 1;
+                        matrix[playerRC[0]][playerRC[1]] = 'S';
+
+                    }
+                    else if (movement[moveCount] == 'D')
+                    {
+                        matrix[playerRC[0]][playerRC[1]] = '.';
+                        playerRC[0] += 1;
+                        matrix[playerRC[0]][playerRC[1]] = 'S';
+                    }
+                    else if (movement[moveCount] == 'L')
+                    {
+                        matrix[playerRC[0]][playerRC[1]] = '.';
+                        playerRC[1] -= 1;
+                        matrix[playerRC[0]][playerRC[1]] = 'S';
+                    }
+                    else if (movement[moveCount] == 'R')
+                    {
+                        matrix[playerRC[0]][playerRC[1]] = '.';
+                        playerRC[1] += 1;
+                        matrix[playerRC[0]][playerRC[1]] = 'S';
+                    }
+                    moveCount++;
+                    if (bossRC[0] == playerRC[0])
+                    {
+
+                        isEnded = true;
+                        matrix[bossRC[0]][bossRC[1]] = 'X';
+                        Console.WriteLine("Nikoladze killed!");
+
+                    }
+                }
+            }
+
+
+            for (int r = 0; r < matrix.Length; r++)
+            {
+                for (int c = 0; c < matrix[0].Length; c++)
+                {
+                    Console.Write(matrix[r][c]);
+                }
+                Console.WriteLine();
+
+            }
+
+        }
+///////////////////////////////////////3///////////////////////////////////////
+ static void Main()
+        {
+            int n = int.Parse(Console.ReadLine());
+
+            string pattern = @"\[[^\d]*(?<number>\d{3,})[^\d]*\]|\{[^\d]*(?<number>\d{3,})[^\d]*\}";
+
+
+            Regex regex = new Regex(pattern);
+
+
+            string text = string.Empty;
+
+            for (int i = 0; i < n; i++)
+            {
+                text += Console.ReadLine();
+            }
+
+            MatchCollection matches = regex.Matches(text);
+
+            foreach (Match match in matches)
+            {
+                string numbers = match.Groups["number"].Value;
+
+                if (numbers.Length % 3 == 0)
+                {
+                    for (int i = 0; i < numbers.Length; i += 3)
+                    {
+                        Console.Write(Convert.ToChar(int.Parse($"{numbers[i]}{numbers[i+1]}{numbers[i+2]}") - match.Length));
+                    }
+                }
+            }
+            Console.WriteLine();
+
+        }
+///////////////////////////////////////4///////////////////////////////////////
+static void Main()
+        {
+            long wantedInfoIndex = int.Parse(Console.ReadLine());
+            long foundInfoIndex = 0;
+            string input;
+            Dictionary<string, Dictionary<string, string>> targets = new Dictionary<string, Dictionary<string, string>>();
+
+            while ((input=Console.ReadLine())!= "end transmissions")
+            {
+                string[] nameAndInfo = input.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] info = nameAndInfo[1].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (!targets.ContainsKey(nameAndInfo[0]))
+                {
+                    targets[nameAndInfo[0]] = new Dictionary<string, string>();
+                }
+
+                for (int i = 0; i < info.Length; i++)
+                {
+                    string[] keyAndValue = info[i].Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    targets[nameAndInfo[0]][keyAndValue[0]] = keyAndValue[1];
+                }
+            }
+
+            string[] killAndName = Console.ReadLine().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            
+            if (targets.ContainsKey(killAndName[1]))
+            {
+                Console.WriteLine($"Info on {killAndName[1]}:");
+                foreach (var info in targets[killAndName[1]].OrderBy(x => x.Key))
+                {
+                    string key = info.Key;
+                    string value = info.Value;
+                    foundInfoIndex += (key.Length + value.Length);
+                    Console.WriteLine($"---{key}: {value}");
+                }
+                Console.WriteLine($"Info index: {foundInfoIndex}");
+
+                if (foundInfoIndex >= wantedInfoIndex)
+                {
+                    Console.WriteLine("Proceed");
+                }
+                else
+                {
+                    Console.WriteLine($"Need {wantedInfoIndex - foundInfoIndex} more info.");
+                }
+            }
+            
+        }
